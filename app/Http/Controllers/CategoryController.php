@@ -190,4 +190,65 @@ class CategoryController extends Controller
             ], 500);
         }
     }
+
+    public function trash()
+    {
+        try {
+            // Obtenemos solo aquellos con fecha de deleted_at
+            $categories = Category::onlyTrashed()->get();
+
+            if (count($categories) < 1) {
+                return response()->json([
+                    'message' => 'No hay categorías eliminadas.',
+                    'data' => [],
+                    'status' => 'success',
+                ], 200);
+            }
+
+            return response()->json([
+                'message' => 'Categorías eliminadas obtenidas correctamente.',
+                'data' => $categories,
+                'status' => 'success',
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'error' => $th->getMessage(),
+                'message' => 'Error al obtener las categorías eliminadas.',
+                'data' => [],
+                'status' => 'error',
+            ], 500);
+        }
+    }
+
+    public function restore($id)
+    {
+        try {
+            $category = Category::onlyTrashed()
+                                ->where('id', $id)
+                                ->first();
+
+            if (!$category) {
+                return response()->json([
+                    'message' => 'Categoría eliminada no encontrada.',
+                    'data' => null,
+                    'status' => 'error',
+                ], 404);
+            }
+            
+            $category->restore(); // Restaurar la categoría
+
+            return response()->json([
+                'message' => 'Categoría restaurada correctamente.',
+                'data' => $category,
+                'status' => 'success',
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'error' => $th->getMessage(),
+                'message' => 'Error al restaurar la categoría.',
+                'data' => null,
+                'status' => 'error',
+            ], 500);
+        }
+    }
 }

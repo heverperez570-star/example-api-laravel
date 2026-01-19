@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 // Usando el controlador para manejar la ruta
 use App\Http\Controllers\HomeController;
 
-use App\Http\Controllers\CategoryController; // Controlador de categorías
 
 /**
  * Metodo: GET, POST, PUT, DELETE
@@ -59,15 +58,5 @@ Route::get('/services', [
     'services'
 ]);
 
-// http://localhost:8000/categories/index
-Route::get('categories/index', [
-    CategoryController::class, 
-    'index'
-]);
 
-// http://localhost:8000/categories/register
-Route::post('categories/register', [
-    CategoryController::class, 
-    'store'
-]);
 

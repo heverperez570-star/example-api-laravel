@@ -123,9 +123,39 @@ class CategoryController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
-        //
+        try {
+            $category = Category::where('id', $id)->first();
+
+            if (!$category) {
+                return response()->json([
+                    'message' => 'Categoría no encontrada.',
+                    'data' => null,
+                    'status' => 'error',
+                ], 404);
+            }
+
+            $category->slug = $request->slug ? $request->slug : $category->slug;
+            $category->name = $request->name ? $request->name : $category->name;
+            $category->description = $request->description ? $request->description : $category->description;
+            $category->status = $request->status ? $request->status : $category->status;
+
+            $category->save();
+
+            return response()->json([
+                'message' => 'Categoría actualizada correctamente.',
+                'data' => $category,
+                'status' => 'success',
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'error' => $th->getMessage(),
+                'message' => 'Error al actualizar la categoría.',
+                'data' => null,
+                'status' => 'error',
+            ], 500);
+        }
     }
 
     /**
@@ -133,6 +163,31 @@ class CategoryController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        try {
+            $category = Category::where('id', $id)->first();
+
+            if (!$category) {
+                return response()->json([
+                    'message' => 'Categoría no encontrada.',
+                    'data' => null,
+                    'status' => 'error',
+                ], 404);
+            }
+
+            $category->delete(); // Si tiene el SoftDeletes en el modelo, hará un soft delete
+
+            return response()->json([
+                'message' => 'Categoría eliminada correctamente.',
+                'data' => null,
+                'status' => 'success',
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'error' => $th->getMessage(),
+                'message' => 'Error al eliminar la categoría.',
+                'data' => null,
+                'status' => 'error',
+            ], 500);
+        }
     }
 }

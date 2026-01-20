@@ -4,7 +4,7 @@ namespace App\Http\Requests\Categories;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class RegisterRequest extends FormRequest
+class UpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -27,6 +27,7 @@ class RegisterRequest extends FormRequest
                 'string', // Debe ser una cadena de texto
                 'min:4', // Longitud mínima de 4 caracteres
                 'max:100', // Longitud máxima de 100 caracteres
+                'unique:categories,slug,' . $this->route('id'), // Debe ser único en la tabla categories, excepto el actual
             ],
             'name'=> [
                 'required',
@@ -55,6 +56,7 @@ class RegisterRequest extends FormRequest
             'slug.string' => "El slug debe ser una cadena de texto.",
             'slug.min' => "El slug debe tener al menos 4 caracteres.",
             'slug.max' => "El slug no debe exceder los 100 caracteres.",
+            'slug.unique' => "El slug ya se encuentra en uso por otra categoría.",
 
             'name.required' => "El nombre es obligatorio.",
             'name.string' => "El nombre debe ser una cadena de texto.",

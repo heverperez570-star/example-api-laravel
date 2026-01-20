@@ -7,6 +7,10 @@ use Illuminate\Http\Request;
 // Usando modelo de categorias
 use App\Models\Category;
 
+// Importando Request de categorias
+use App\Http\Requests\Categories\RegisterRequest;
+use App\Http\Requests\Categories\UpdateRequest;
+
 class CategoryController extends Controller
 {
     /**
@@ -46,8 +50,11 @@ class CategoryController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(RegisterRequest $request)
     {
+        // Ejecuta las validaciones establecidas en el Request personalizado
+        $validatedData = $request->validated();
+
         try {
             $newCategory = new Category();
 
@@ -69,6 +76,7 @@ class CategoryController extends Controller
                 'message' => 'Error al crear la categoría.',
                 'data' => null,
                 'status' => 'error',
+                // 'test' => "Probando",
             ], 500);
         }
     }
@@ -107,8 +115,10 @@ class CategoryController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id)
+    public function update(UpdateRequest $request, $id)
     {
+        $validatedData = $request->validated();
+        
         try {
             $category = Category::where('id', $id)->first();
 

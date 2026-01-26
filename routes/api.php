@@ -3,6 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\AuthController; // Controlador de autenticación
+use App\Http\Controllers\RoleController; // Controlador de roles
 use App\Http\Controllers\CategoryController; // Controlador de categorías
 use App\Http\Controllers\ProductController; // Controlador de productos
 
@@ -28,6 +30,15 @@ Route::prefix('products')->group(function () {
     Route::get("find/{id}", [ ProductController::class, 'show'])->name('products.show');
     Route::put("update/{id}", [ ProductController::class, 'update'])->name('products.update');
     Route::delete("delete/{id}", [ ProductController::class, 'destroy'])->name('products.destroy');
+});
+
+Route::prefix('roles')->group(function () {
+    Route::get("index", [ RoleController::class, 'index'])->name('roles.index');
+    Route::post("register", [ RoleController::class, 'store'])->name('roles.store');
+});
+
+Route::prefix('auth')->group(function () {
+    Route::post('register', [ AuthController::class, 'register'])->name('auth.register');
 });
 
 

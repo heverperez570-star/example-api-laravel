@@ -66,3 +66,9 @@
 	```bash
 	php artisan make:request Categories/RegisterRequest
 	```
+
+12. Refrescar toda la base datos (Actualizar la estructura base y limpiar los datos).
+
+	```bash
+	php artisan migrate:fresh
+	```

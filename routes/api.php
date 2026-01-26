@@ -39,6 +39,7 @@ Route::prefix('roles')->group(function () {
 
 Route::prefix('auth')->group(function () {
     Route::post('register', [ AuthController::class, 'register'])->name('auth.register');
+    Route::post('login', [ AuthController::class, 'login'])->name('auth.login');
 });
 
 

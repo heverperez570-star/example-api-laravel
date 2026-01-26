@@ -51,11 +51,57 @@ class AuthController extends Controller
         $validatedData = $request->validated();
 
         try {
+            // Buscamos el usuario por el correo electrónico y estado activo
+            $user = User::where('email', $request->email)
+                        ->where('status', true)
+                        ->first();
+
+            // Recolectamos las credenciales enviadas
+            $credentials = array(
+                'email' => $request->email,
+                'password' => $request->password,
+            );
+
+            // Intentamos autenticar al usuario con las credenciales
+            if (Auth::attempt($credentials) == false || $user == NULL) {
+                return response()->json([
+                    'message' => 'Credenciales inválidas o usuario no encontrado.',
+                    'data' => null,
+                    'status' => 'error',
+                ], 401);
+            }
+
+            // Obtiene el usuario autenticado
+            // $loggedUser = Auth::user();
+            $loggedUser = $request->user();
             
+            // Creamos token de acceso
+            $tokenResult = $loggedUser->createToken('Admin Access Token');
+
+            // Almacenamos el token de acceso
+            $token = $tokenResult->accessToken;
+
+            // Cambiamos la fecha de expiración del token
+            // $token->expires_at = Carbon::now()->addhours(3);
+            
+            // Guardamos el token en la base de datos
+            $token->save();
+
+            return response()->json([
+                'message' => 'Inicio de sesión exitoso.',
+                'data' => [
+                    'user' => $loggedUser, // Información del usuario autenticado
+                    'access_token' => $tokenResult->accessToken, // Token
+                    'token_type' => 'Bearer', // Tipo de token
+                    'expires_at' => $tokenResult->token->expires_at, // Fecha de expiración
+                ],
+                'status' => 'success',
+            ], 200);
         } catch (\Throwable $th) {
             return response()->json([
                 'message' => 'Error al iniciar sesión.',
                 'data' => null,
+                'error' => $th->getMessage(),
                 'status' => 'error',
             ], 500);
         }

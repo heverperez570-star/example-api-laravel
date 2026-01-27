@@ -259,5 +259,8 @@ class AuthController extends Controller
     }
 
     // El cambio de la contraseña
-    public function resetPassword() {}
+    public function resetPassword()
+    {
+        
+    }
 }

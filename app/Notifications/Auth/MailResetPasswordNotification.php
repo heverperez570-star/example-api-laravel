@@ -11,12 +11,19 @@ class MailResetPasswordNotification extends Notification
 {
     use Queueable;
 
+    protected $token;
+    protected $url;
+
     /**
      * Create a new notification instance.
      */
-    public function __construct()
-    {
-        //
+    public function __construct($token)
+    {   
+        // Asignamos el token
+        $this->token = $token;
+
+        // Asignamos la URL de la aplicación desde el archivo .env
+        $this->url = env('APP_URL', "http://localhost:3000");
     }
 
     /**
@@ -34,10 +41,14 @@ class MailResetPasswordNotification extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
+        // http://localhost:3000/reset-account/{token}
+        $resetUrl = $this->url . '/reset-account/' . $this->token;
+
         return (new MailMessage)
-            ->line('Test.')
-            ->action('Prueba', url('/'))
-            ->line('Gracias por usar nuestra aplicación!');
+            ->subject('Solicitud para cambio de contraseña')
+            ->line('Has recibido este correo porque se ha solicitado un restablecimiento de contraseña para tu cuenta.')
+            ->action('Cambiar contraseña', $resetUrl)
+            ->line('Si no has solicitado un cambio de contraseña, puedes ignorar este correo.');
     }
 
     /**

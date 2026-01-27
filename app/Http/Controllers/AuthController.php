@@ -15,6 +15,7 @@ use App\Models\User;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\ForgotPasswordRequest;
+use App\Http\Requests\Auth\ResetPasswordRequest;
 
 class AuthController extends Controller
 {
@@ -259,8 +260,60 @@ class AuthController extends Controller
     }
 
     // El cambio de la contraseña
-    public function resetPassword()
+    public function resetPassword(ResetPasswordRequest $request)
     {
-        
+        $validatedData = $request->validated();
+
+        try {
+            $user = User::where('email', $request->email)->first();
+
+            if ($user == NULL) {
+                return response()->json([
+                    'message' => 'El correo electrónico no se encuentra registrado.',
+                    'data' => null,
+                    'status' => 'error',
+                ], 404);
+            }
+
+            // Recolectamos los datos necesarios para el cambio de contraseña
+            $input = array(
+                'token' => $request->token,
+                'email' => $request->email,
+                'password' => $request->password,
+                'password_confirmation' => $request->password_confirmation,
+            );
+
+            // Realizamos el cambio de contraseña
+            $change = Password::reset($input, function ($user, $password) {
+                // Cambiar la contraseña
+                $user->forceFill([
+                    'password' => bcrypt($password)
+                ])->save(); // Guardamos la nueva contraseña encriptada
+
+                // Ejecutamos el evento de restablecimiento de contraseña
+                event(new PasswordReset($user));
+            });
+
+            // Verificar que el cambio se realizó correctamente
+            if ($change != Password::PASSWORD_RESET) {
+                return response()->json([
+                    'message' => 'No se pudo cambiar la contraseña.',
+                    'data' => null,
+                    'status' => 'error',
+                ], 400);
+            }
+
+            return response()->json([
+                'message' => 'Contraseña cambiada exitosamente.',
+                'data' => null,
+                'status' => 'success',
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'Error al cambiar la contraseña.',
+                'data' => null,
+                'status' => 'error',
+            ], 500);
+        }
     }
 }

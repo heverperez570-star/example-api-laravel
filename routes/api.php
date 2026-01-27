@@ -42,6 +42,7 @@ Route::prefix('auth')->group(function () {
     Route::post('register', [ AuthController::class, 'register'])->name('auth.register');
     Route::post('login', [ AuthController::class, 'login'])->name('auth.login');
     Route::post('forgot-password', [ AuthController::class, 'sendResetLink'])->name('auth.forgot-password');
+    Route::post('reset-password', [ AuthController::class, 'resetPassword'])->name('auth.reset-password');
 
     // Rutas protegidas (Rutas que necesitan si o si el token de autenticación)
     Route::middleware(['auth:api'])->group(function () {

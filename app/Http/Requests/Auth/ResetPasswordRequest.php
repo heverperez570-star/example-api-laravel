@@ -42,4 +42,29 @@ class ResetPasswordRequest extends FormRequest
 
         return $rules;
     }
+
+    /**
+     * Custom messages for validation errors.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        $messages = array(
+            'token.required' => 'El token de restablecimiento es obligatorio.',
+            'token.string' => 'El token de restablecimiento debe ser una cadena de texto válida.',
+            
+            'email.required' => 'El campo correo electrónico es obligatorio.',
+            'email.email' => 'El campo correo electrónico debe ser una dirección de correo válida.',
+            'email.exists' => 'No se encontró ningún usuario con este correo electrónico.',
+            
+            'password.required' => 'El campo contraseña es obligatorio.',
+            'password.string' => 'El campo contraseña debe ser una cadena de texto válida.',
+            // 'password.regex' => 'La contraseña debe tener al menos una letra mayúscula, una letra minúscula, un número y un carácter especial.',
+            'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
+            'password.confirmed' => 'La confirmación de la contraseña no coincide.',
+        );
+
+        return $messages;
+    }
 }

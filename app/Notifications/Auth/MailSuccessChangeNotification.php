@@ -35,9 +35,12 @@ class MailSuccessChangeNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->line('The introduction to the notification.')
-            ->action('Notification Action', url('/'))
-            ->line('Thank you for using our application!');
+            ->bcc(
+                env('MAIL_COPY_TO') // Dirección de copia oculta desde el archivo .env
+            ) // Copia oculta a la dirección configurada
+            ->subject('Cambio de contraseña realizado con éxito')
+            ->line('Se ha realizado un cambio de contraseña en su cuenta. Si usted no ha solicitado este cambio, por favor contacte con el soporte inmediatamente.')
+            ->line('¡Gracias por usar nuestra aplicación!');
     }
 
     /**

@@ -17,6 +17,9 @@ use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\ForgotPasswordRequest;
 use App\Http\Requests\Auth\ResetPasswordRequest;
 
+use App\Notifications\Auth\MailSuccessChangeNotification; // Notificación de cambio de contraseña exitoso
+use App\Notifications\Auth\MailRegisterNotification; // Notificación de registro exitoso
+
 class AuthController extends Controller
 {
     public function register(RegisterRequest $request)
@@ -37,6 +40,12 @@ class AuthController extends Controller
             $newUser->password = $hashPassword;
 
             $newUser->save();
+
+            // Notificamos de la nueva cuenta creada
+            Notification::send(
+                $newUser, // Usuario que recibe la notificación
+                new MailRegisterNotification($newUser->names) // Los nombres del usuario
+            );
 
             return response()->json([
                 'message' => 'Usuario registrado exitosamente.',
@@ -302,6 +311,12 @@ class AuthController extends Controller
                     'status' => 'error',
                 ], 400);
             }
+
+            // Enviamos la notificación de cambio de contraseña exitoso
+            Notification::send(
+                $user, 
+                new MailSuccessChangeNotification()
+            );
 
             return response()->json([
                 'message' => 'Contraseña cambiada exitosamente.',
